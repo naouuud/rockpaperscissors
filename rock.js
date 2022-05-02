@@ -1,52 +1,105 @@
 function computerPlay() {
     let i = Math.floor(Math.random() * 3);
-    if (i === 0) return "rock"; 
-    else if (i === 1) return "paper";
-    else return "scissors";
+    if (i === 0) {
+        changeColor('rock');
+        return "rock";
     }
+    else if (i === 1) {
+        changeColor('paper');
+        return "paper";
+    }
+    else {
+        changeColor('scissors');
+        return "scissors";
+    }
+}
+
+const computerButtons = document.querySelectorAll('button.computer');
+
+function changeColor(rps) {
+    computerButtons.forEach(button => button.style.backgroundColor = null);
+    const button = document.querySelector(`button.computer.${rps}`);
+    button.style.backgroundColor = 'orange';
+}
 
 function playRound(compy, human) {
     if (compy === 'rock') {
-        if (human === "rock") return;
-        else if (human === 'paper') return true;
+        if (human === "player rock") return;
+        else if (human === 'player paper') return true;
         else return false;
         }
     if (compy === 'paper') {
-        if (human === "paper") return;
-        else if (human === 'scissors') return true;
+        if (human === "player paper") return;
+        else if (human === 'player scissors') return true;
         else return false;
         }
     if (compy === 'scissors') {
-        if (human === "scissors") return;
-        else if (human === 'rock') return true;
+        if (human === "player scissors") return;
+        else if (human === 'player rock') return true;
         else return false;
         }
     }
 
+function updateScore() {
+    const score = document.querySelector('.score');
+    score.innerHTML = `Player score: ${playerScore}<br>Computer score: ${computerScore}`;
+    document.body.removeChild(score);
+    document.body.appendChild(score);
+}
+
+const firstButton = document.querySelector('button');
+
+function displayRound() {
+    const round = document.querySelector('.round');
+    round.textContent = `Round ${roundNumber}:`;
+    document.body.removeChild(round);
+    document.body.insertBefore(round, firstButton);
+}
+
 let playerScore = 0;
 let computerScore = 0;
-let round = 1;
+let roundNumber = 1;
 
 function playGame(a, b) {
-    console.log('Round ' + round + ':');
+    roundNumber ++;
+    const winner = document.querySelector('.winner');
+    if (winner) document.body.removeChild(winner);
     const result = playRound(a, b);
-        console.log('The computer has chosen ' + a + '.');
-        console.log('The player has chosen ' + b + '.');
         if (result === true) {
-            console.log('Player wins.');
             playerScore++;
         }
         else if (result===false) {
-            console.log('Computer wins.');
             computerScore++;
         }
-        else console.log ('It\'s a tie');
-        console.log('Player score: ' + playerScore + '  Computer score: ' + computerScore);
-    if (playerScore === 5) console.log('THE PLAYER IS VICTORIOUS!');
-    if (computerScore === 5) console.log('THE COMPUTER IS VICTORIOUS!');
-    round ++;
+    if (playerScore === 5) {
+        const winner = document.createElement('div');
+        winner.classList.add('winner');
+        winner.textContent = "The player is victorious!";
+        document.body.appendChild(winner);
+        playerScore = 0;
+        computerScore = 0;
+        roundNumber = 1;
+        playerButtons.forEach(button => button.style.backgroundColor = null);
+        computerButtons.forEach(button => button.style.backgroundColor = null);
+    }
+    if (computerScore === 5) {
+        const winner = document.createElement('div');
+        winner.classList.add('winner');
+        winner.textContent = "The computer is victorious!";
+        document.body.appendChild(winner);
+        playerScore = 0;
+        computerScore = 0;
+        roundNumber = 1;
+        playerButtons.forEach(button => button.style.backgroundColor = null);
+        computerButtons.forEach(button => button.style.backgroundColor = null);
+    }
+    updateScore();
+    displayRound();
 }
 
-const buttons = document.querySelectorAll("button");
-buttons.forEach(button => button.addEventListener('click', () => 
-                playGame(computerPlay(), button.className)));
+const playerButtons = document.querySelectorAll("button.player");
+playerButtons.forEach(button => button.addEventListener('click', () => {
+                playerButtons.forEach(button => button.style.backgroundColor = null);
+                button.style.backgroundColor = 'blue';
+                playGame(computerPlay(), button.className);
+            }));
