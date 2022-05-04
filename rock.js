@@ -92,6 +92,7 @@ const reset = document.querySelector(".reset");
 const resetButton = document.createElement('button');
 
 function promptReset() {
+    playerButtons.forEach(button => button.removeEventListener('click', startGame));
     resetButton.textContent = "Play again...";
     reset.appendChild(resetButton);
     resetButton.addEventListener('click', resetGame);
@@ -107,15 +108,15 @@ function resetGame() {
     updateRound();
     playerButtons.forEach(button => button.style.backgroundColor = null);
     computerButtons.forEach(button => button.style.backgroundColor = null);
+    playerButtons.forEach(button => button.addEventListener('click', startGame));
 }
-
-const computerButtons = document.querySelectorAll('button.computer');
-const playerButtons = document.querySelectorAll("button.player");
-playerButtons.forEach(button => button.addEventListener('click', (e) => startGame(e)));
 
 function startGame(e) {
     computerButtons.forEach(button => button.style.backgroundColor = null);
     playerButtons.forEach(button => button.style.backgroundColor = null);
-    e.srcElement.style.backgroundColor = 'blue';
     playGame(computerPlay(), e.srcElement.id);
 }
+
+const computerButtons = document.querySelectorAll('button.computer');
+const playerButtons = document.querySelectorAll("button.player");
+playerButtons.forEach(button => button.addEventListener('click', startGame));
