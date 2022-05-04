@@ -1,4 +1,4 @@
-function computerPlay() {
+function computerPlay() { //generates random computer weapon
     let i = Math.floor(Math.random() * 3);
     if (i === 0) {
         changeColor('rock');
@@ -16,13 +16,13 @@ function computerPlay() {
 
 const computerButtons = document.querySelectorAll('button.computer');
 
-function changeColor(rps) {
+function changeColor(rps) { //changes selected computer weapon color
     computerButtons.forEach(button => button.style.backgroundColor = null);
     const button = document.querySelector(`button.computer.${rps}`);
     button.style.backgroundColor = 'orange';
 }
 
-function playRound(compy, human) {
+function playRound(compy, human) { //compares computer and player selections
     if (compy === 'rock') {
         if (human === "player rock") return;
         else if (human === 'player paper') return true;
@@ -40,66 +40,77 @@ function playRound(compy, human) {
         }
     }
 
+const right = document.querySelector(".right");
+
 function updateScore() {
-    const score = document.querySelector('.score');
+    const score = right.querySelector('.score');
     score.innerHTML = `Player score: ${playerScore}<br>Computer score: ${computerScore}`;
-    document.body.removeChild(score);
-    document.body.appendChild(score);
+    right.removeChild(score);
+    right.appendChild(score);
 }
 
-const firstButton = document.querySelector('button');
+const left = document.querySelector(".left");
 
-function displayRound() {
-    const round = document.querySelector('.round');
-    round.textContent = `Round ${roundNumber}:`;
-    document.body.removeChild(round);
-    document.body.insertBefore(round, firstButton);
+function updateRound() {
+    const round = left.querySelector('.round');
+    round.textContent = `Round ${roundNumber}`;
+    left.removeChild(round);
+    left.appendChild(round);
 }
 
 let playerScore = 0;
 let computerScore = 0;
 let roundNumber = 1;
 
+const winner = document.querySelector(".winner");
+
 function playGame(a, b) {
     roundNumber ++;
-    const winner = document.querySelector('.winner');
-    if (winner) document.body.removeChild(winner);
-    const result = playRound(a, b);
+    const result = playRound(a, b); //calls playRound to determine round winner
         if (result === true) {
             playerScore++;
         }
         else if (result===false) {
             computerScore++;
         }
+    updateScore(); 
+    updateRound();
     if (playerScore === 5) {
-        const winner = document.createElement('div');
-        winner.classList.add('winner');
         winner.textContent = "The player is victorious!";
-        document.body.appendChild(winner);
-        playerScore = 0;
-        computerScore = 0;
-        roundNumber = 1;
-        playerButtons.forEach(button => button.style.backgroundColor = null);
-        computerButtons.forEach(button => button.style.backgroundColor = null);
+        promptReset();
     }
     if (computerScore === 5) {
-        const winner = document.createElement('div');
-        winner.classList.add('winner');
         winner.textContent = "The computer is victorious!";
-        document.body.appendChild(winner);
-        playerScore = 0;
-        computerScore = 0;
-        roundNumber = 1;
-        playerButtons.forEach(button => button.style.backgroundColor = null);
-        computerButtons.forEach(button => button.style.backgroundColor = null);
+        promptReset();
     }
+}
+
+const reset = document.querySelector(".reset");
+const resetButton = document.createElement('button');
+
+function promptReset() {
+    resetButton.textContent = "Play again...";
+    reset.appendChild(resetButton);
+    resetButton.addEventListener('click', resetGame);
+}
+
+function resetGame() {
+    reset.removeChild(resetButton);
+    winner.textContent = "";
+    playerScore = 0;
+    computerScore = 0;
+    roundNumber = 1;
     updateScore();
-    displayRound();
+    updateRound();
+    playerButtons.forEach(button => button.style.backgroundColor = null);
+    computerButtons.forEach(button => button.style.backgroundColor = null);
 }
 
 const playerButtons = document.querySelectorAll("button.player");
-playerButtons.forEach(button => button.addEventListener('click', () => {
-                playerButtons.forEach(button => button.style.backgroundColor = null);
-                button.style.backgroundColor = 'blue';
-                playGame(computerPlay(), button.className);
-            }));
+playerButtons.forEach(button => button.addEventListener('click', (e) => startGame(e)));
+
+function startGame(e) {
+    playerButtons.forEach(button => button.style.backgroundColor = null);
+    e.srcElement.style.backgroundColor = 'blue';
+    playGame(computerPlay(), e.srcElement.className);
+}
